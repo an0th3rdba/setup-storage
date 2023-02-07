@@ -14,11 +14,11 @@ Ensure that you select the correct devices/disks.
 
 Example Playbook
 ----------------
-
+```
 - hosts: all
   roles:
       - { role: setup-storage, become: true }
-
+```
 License
 -------
 
