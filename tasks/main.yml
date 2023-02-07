@@ -1,0 +1,79 @@
+---
+- name: Install lvm2 package
+  import_tasks: install_lvm2.yml
+  tags: install_lvm2, always
+
+- name: Create disk partitions
+  parted:
+    device: "{{ item.device_path }}"
+    number: 1
+    label: gpt
+    flags: [lvm]
+    name: primary
+    state: present
+    part_end: "100%"
+  with_items:
+    - "{{ storage }}"
+  loop_control:
+    label: "{{ item.device_path }}"
+  when: item.oper_type == 'create'
+  tags: partitions
+
+- name: Create volume group(s)
+  lvg:
+    vg: "{{ item.vgname }}"
+    pvs: "{{ item.device_path }}1"
+  with_items:
+    - "{{ storage }}"
+  loop_control:
+    label: "{{ item.vgname }}"
+  when: item.oper_type == 'create'
+  tags: volume_groups
+
+- name: Create logical volume(s)
+  lvol:
+    lv: "{{ item.lvname }}"
+    vg: "{{ item.vgname }}"
+    size: "{{ item.lv_size_value }}{{ item.lv_size_unit }}"
+  with_items:
+    - "{{ storage }}"
+  loop_control:
+    label: "{{ item.lvname }}"
+  when: item.oper_type == 'create'
+  tags: logical_volumes
+
+- name: Create file system(s)
+  filesystem:
+    fstype: "{{ item.filesystem_type }}"
+    dev: "/dev/{{ item.vgname }}/{{ item.lvname }}"
+  with_items:
+    - "{{ storage }}"
+  loop_control:
+    label: "{{ item.lvname }}"
+  when: item.oper_type == 'create'
+  tags: filesystems
+
+- name: Create mount directory(es)
+  file:
+    path: "{{ item.mount_dir }}"
+    state: directory
+  with_items:
+    - "{{ storage }}"
+  loop_control:
+    label: "{{ item.mount_dir }}"
+  when: item.oper_type == 'create'
+  tags: directories
+
+- name: Mount and update /etc/fstab
+  mount:
+    path: "{{ item.mount_dir }}"
+    src: "/dev/{{ item.vgname }}/{{ item.lvname }}"
+    fstype: "{{ item.filesystem_type }}"
+    opts: "{{ item.mount_options }}"
+    state: mounted
+  with_items:
+    - "{{ storage }}"
+  loop_control:
+    label: "{{ item.mount_dir }}"
+  when: item.oper_type == 'create'
+  tags: mount

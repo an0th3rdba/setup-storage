@@ -1,0 +1,101 @@
+##
+## Example 1: all logical volumes are place on one device (vdb) and one volume group.
+##
+storage:
+  - oper_type: create
+    lvname: lvdata
+    vgname: vgpostgres
+    device_path: /dev/vdb
+    lv_size_unit: "%VG" # g, m, %VG, 100%FREE
+    lv_size_value: 65
+    mount_dir: /data
+    mount_options: "defaults,noatime"
+    filesystem_type: ext4
+
+  - oper_type: create
+    lvname: lvarch
+    vgname: vgpostgres
+    device_path: /dev/vdb
+    lv_size_unit: "%VG" # g, m, %VG, 100%FREE
+    lv_size_value: 20
+    mount_dir: /arch
+    mount_options: "defaults,noatime"
+    filesystem_type: ext4
+
+  - oper_type: create
+    lvname: lvlogs
+    vgname: vgpostgres
+    device_path: /dev/vdb
+    lv_size_unit: "%VG" # g, m, %VG, %FREE
+    lv_size_value: 15
+    mount_dir: /logs
+    mount_options: "defaults,noatime"
+    filesystem_type: ext4
+
+##
+## Example 2: each logical volume uses separate device and separate volume group.
+##
+# storage:
+#   - oper_type: create
+#     lvname: lvdata
+#     vgname: vgdata
+#     device_path: /dev/vdb
+#     lv_size_unit: "%FREE" # g, m, %VG, 100%FREE
+#     lv_size_value: 100
+#     mount_dir: /data
+#     mount_options: "defaults,noatime"
+#     filesystem_type: ext4
+
+#   - oper_type: create
+#     lvname: lvarch
+#     vgname: vgarch
+#     device_path: /dev/vdc
+#     lv_size_unit: "%FREE" # g, m, %VG, 100%FREE
+#     lv_size_value: 100
+#     mount_dir: /arch
+#     mount_options: "defaults,noatime"
+#     filesystem_type: ext4
+
+#   - oper_type: create
+#     lvname: lvlogs
+#     vgname: vglogs
+#     device_path: /dev/vdd
+#     lv_size_unit: "%FREE" # g, m, %VG, %FREE
+#     lv_size_value: 100
+#     mount_dir: /logs
+#     mount_options: "defaults,noatime"
+#     filesystem_type: ext4
+
+##
+## Example 3: one logical device uses dedicated device (vdb) and volume group, but two others are share second volume group placed on separate device (vdc).
+##
+# storage:
+#   - oper_type: create
+#     lvname: lvdata
+#     vgname: vgpostgres
+#     device_path: /dev/vdb
+#     lv_size_unit: "%FREE" # g, m, %VG, 100%FREE
+#     lv_size_value: 100
+#     mount_dir: /data
+#     mount_options: "defaults,noatime"
+#     filesystem_type: ext4
+
+#   - oper_type: create
+#     lvname: lvarch
+#     vgname: vgpostgres2
+#     device_path: /dev/vdc
+#     lv_size_unit: "%VG" # g, m, %VG, 100%FREE
+#     lv_size_value: 50
+#     mount_dir: /arch
+#     mount_options: "defaults,noatime"
+#     filesystem_type: ext4
+
+#   - oper_type: create
+#     lvname: lvlogs
+#     vgname: vgpostgres2
+#     device_path: /dev/vdc
+#     lv_size_unit: "%FREE" # g, m, %VG, %FREE
+#     lv_size_value: 100
+#     mount_dir: /logs
+#     mount_options: "defaults,noatime"
+#     filesystem_type: ext4

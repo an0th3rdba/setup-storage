@@ -1,0 +1,14 @@
+---
+- name: Install lvm2 package (RedHat)
+  yum:
+    name: lvm2
+    update_cache: true
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install lvm2 package (Debian)
+  apt:
+    name: lvm2
+    update_cache: true
+    state: present
+  when: ansible_os_family == "Debian"
